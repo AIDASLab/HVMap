@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Meta: paper description and keywords -->
+  <meta name="description"
+        content="HVMap is a lightweight compatibility layer for federated retrieval across heterogeneous vectorDBs built with different embedding models, learning bidirectional mappings between embedding spaces with a fuzzy contrastive loss.">
+  <meta name="keywords" content="Vector Database, Federated Retrieval, Heterogeneous Embeddings, Embedding Mapping, Fuzzy Contrastive Loss, HVMap, RAG">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Paper title -->
+  <title>Federated Vector Retrieval across Heterogeneous VectorDBs</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.ico">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <!-- MathJax for LaTeX rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://aidas.snu.ac.kr">
+        <span class="icon">
+            <i class="fas fa-home"></i>
+        </span>
+        <div style="padding-left:5px;">AIDAS Lab</div>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <!-- Paper Title -->
+          <h1 class="title is-1 publication-title">Federated Vector Retrieval across Heterogeneous VectorDBs</h1>
+
+          <!-- Conference Name and Year -->
+          <h1 class="title is-4 publication-title" style="color: #7C3AED;">
+            VLDB, 2027
+          </h1>
+
+          <!-- Authors and Affiliations -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="mailto:victorlim@snu.ac.kr">Mintaek Lim</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="mailto:zxc2692@snu.ac.kr">Sieun Hyeon</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="mailto:cds06126@snu.ac.kr">Geon Choi</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="mailto:jaeyoung.do@snu.ac.kr">Jaeyoung Do</a><sup>1,*</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Seoul National University</span>
+            <span class="author-block">&nbsp;&nbsp;<sup>*</sup>Corresponding author</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- Paper Link. TODO: set the paper URL -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Arxiv Link. TODO: set the arXiv URL -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/AIDASLab/HVMap"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/snu-aidas/HVMap-dataset"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-database"></i>
+                  </span>
+                  <span>Dataset</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Teaser -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <!-- main image -->
+      <figure class="image">
+        <img src="./static/images/figure2.svg"
+             alt="Framework of HVMap for federated retrieval across two heterogeneous vectorDBs.">
+      </figure>
+      <h2 class="subtitle has-text-centered" style="margin-top: 20px;">
+        <strong>HVMap</strong> &mdash; a lightweight compatibility layer that learns bidirectional
+        mappings between embedding spaces, so heterogeneous vectorDBs can be searched and ranked
+        together without re-embedding the corpus or rebuilding indexes.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<!-- Paper abstract -->
+<section class="hero is-light ">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="column has-text-justified" style="padding: 0;">
+            <p>
+              Many real deployments must serve queries over multiple independently constructed
+              vectorDBs built with different embedding models. Vectors and similarity scores are not
+              directly comparable across embedding spaces, and resolving this through corpus-wide
+              re-embedding and re-indexing is often operationally prohibitive. Existing methods face a
+              difficult trade-off between retrieval quality, construction cost, and query throughput.
+            </p>
+            <p>
+              We present <strong>HVMap</strong>, a lightweight compatibility layer for federated
+              retrieval across heterogeneous vectorDBs. HVMap learns bidirectional mappings between
+              embedding spaces using a fuzzy contrastive loss, enabling calibrated cross-database
+              scoring without corpus migration or index reconstruction, and scales to many vectorDBs
+              through a hub-based architecture. Across open-domain, cross-domain, and scale-out
+              settings, HVMap achieves up to <strong>3.59&times;</strong> higher nDCG@10, up to
+              <strong>2.01&times;</strong> higher query throughput, and construction time as low as
+              <strong>0.3%</strong> of baseline methods.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contributions -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Contributions</h2>
+        <div class="content has-text-justified">
+          <ul>
+            <li>
+              <strong>Problem formulation</strong> &mdash; federated retrieval across
+              embedding-heterogeneous vectorDBs as a systems problem, with cross-space score
+              comparability as its central challenge.
+            </li>
+            <li>
+              <strong>HVMap</strong> &mdash; a compatibility layer that preserves native vectors and
+              indexes, combines bidirectional candidate transformation with global ranking, and scales
+              through a bounded-depth hub topology.
+            </li>
+            <li>
+              <strong>Cross-domain benchmark</strong> &mdash; the first public benchmark for
+              cross-domain retrieval across heterogeneous vectorDBs (financial, biomedical, science),
+              with human validation.
+            </li>
+            <li>
+              <strong>Favorable trade-off</strong> &mdash; better accuracy&ndash;cost&ndash;throughput
+              balance than migration, fusion, and learned-alignment baselines.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3" style="margin-bottom: 2.5rem;">Method</h2>
+
+        <!-- Method 1: federated retrieval with bidirectional mapping -->
+        <div class="method-card">
+          <div class="method-head">
+            <span class="result-badge"><i class="fas fa-exchange-alt"></i></span>
+            <span class="result-theme">Bidirectional Mapping &amp; Global Ranking</span>
+            <span class="result-figref">Figure 2</span>
+          </div>
+          <p>
+            A query is encoded once by one model, $\mathbf{q}^t = \phi^t(\text{text}_q)$, and mapped to
+            the other space with a lightweight function $\mathbf{q}^s \approx f^{t\to s}(\mathbf{q}^t)$
+            instead of running a second embedding model. Each vectorDB is searched in its own space,
+            and every retrieved candidate is mapped into the opposite space so the ranker can score it
+            with both a <strong>native</strong> and a <strong>mapped</strong> similarity:
+          </p>
+          <div class="eq-block">
+            <span class="eq-num">(1)</span>
+            \[ \mathrm{SCORE}_2(\mathbf{x}^k) = \begin{cases} w_1\, sim(\mathbf{q}^t, \mathbf{x}^k) + w_2\, sim\big(\mathbf{q}^s, f^{t\to s}(\mathbf{x}^k)\big), & k = t \\[4pt] w_1\, sim(\mathbf{q}^s, \mathbf{x}^k) + w_2\, sim\big(\mathbf{q}^t, f^{s\to t}(\mathbf{x}^k)\big), & k = s \end{cases} \]
+          </div>
+          <p>
+            The ranker keeps the global top-$K$ over all $2K$ candidates, so any source can contribute
+            all $K$ results even under skewed relevance. A slightly larger native weight
+            ($w_1 = 0.7$) works best, since the native score carries no mapping error.
+          </p>
+        </div>
+
+        <!-- Method 2: hub-and-spoke scalability -->
+        <div class="method-card">
+          <div class="method-head">
+            <span class="result-badge"><i class="fas fa-project-diagram"></i></span>
+            <span class="result-theme">Hub-and-Spoke Scalability</span>
+            <span class="result-figref">Figure 3</span>
+          </div>
+          <figure class="image">
+            <img src="./static/images/figure3.svg"
+                 alt="Extended HVMap framework for scalable federated retrieval across four heterogeneous vectorDBs.">
+          </figure>
+          <p style="margin-top: 1rem;">
+            One embedding space acts as the hub and the rest as spokes. The query is propagated from
+            the hub to every spoke, candidates are gathered into the hub space, then propagated to each
+            spoke in a single batch. This keeps the number of mappings at $O(N)$ instead of $O(N^2)$,
+            bounds any cross-space transformation to two steps (spoke &rarr; hub &rarr; spoke), and
+            lets a lightweight hub model keep query embedding cheap.
+          </p>
+        </div>
+
+        <!-- Method 3: fuzzy contrastive loss -->
+        <div class="method-card">
+          <div class="method-head">
+            <span class="result-badge"><i class="fas fa-th"></i></span>
+            <span class="result-theme">Fuzzy Contrastive Loss</span>
+            <span class="result-figref">Figure 4</span>
+          </div>
+          <figure class="image">
+            <img src="./static/images/figure4.svg"
+                 alt="Visualization of the fuzzy contrastive loss used to train the mapping function.">
+          </figure>
+          <p style="margin-top: 1rem;">
+            The mapping $f$ is trained on paired embeddings of the same documents with both embedding
+            models frozen. Instead of a fixed contrastive margin, every pair gets a margin equal to its
+            semantic distance in the target space, and each mapped-to-target distance is regressed
+            toward it:
+          </p>
+          <div class="eq-block">
+            <span class="eq-num">(2)</span>
+            \[ \mathcal{L}(\mathbf{X}^t, \mathbf{X}^s; f) = \sum_{i=1}^{N} \sum_{j=1}^{N} \Big\| \mu(\mathbf{x}^s_i, \mathbf{x}^s_j) - d\big(f(\mathbf{x}^t_i), \mathbf{x}^s_j\big) \Big\|^2, \qquad \mu(\mathbf{x}_1, \mathbf{x}_2) = 1 - \frac{\mathbf{x}_1 \cdot \mathbf{x}_2}{\|\mathbf{x}_1\|\,\|\mathbf{x}_2\|} \]
+          </div>
+          <p>
+            Diagonal terms align each mapped embedding with its paired target, while off-diagonal terms
+            preserve its graded relations to the other target vectors &mdash; matching exactly what an
+            unchanged target index compares at query time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3" style="margin-bottom: 2.5rem;">Results</h2>
+
+        <!-- Figures 5, 6, 7 shown together -->
+        <div class="result-card">
+          <div class="result-head">
+            <span class="result-badge">1</span>
+            <span class="result-theme">Two Heterogeneous VectorDBs</span>
+            <span class="result-figref">Figures 5 &middot; 6 &middot; 7</span>
+          </div>
+
+          <!-- Figure 5: retrieval quality (full width) -->
+          <p class="subfig-label">(a) Retrieval quality &mdash; Figure 5</p>
+          <figure class="image">
+            <img src="./static/images/figure5.svg"
+                 alt="Recall@10 and nDCG@10 across six open-domain datasets and three cross-domain settings.">
+          </figure>
+          <p class="result-caption">
+            Recall@10 and nDCG@10 across six open-domain datasets and three cross-domain settings.
+          </p>
+
+          <!-- Figures 6 and 7: construction cost and throughput (side by side) -->
+          <div class="columns is-variable is-4" style="margin-top: 0.5rem;">
+            <div class="column">
+              <p class="subfig-label">(b) Construction cost &mdash; Figure 6</p>
+              <figure class="image">
+                <img src="./static/images/figure6.svg"
+                     alt="Decomposed construction costs at the 50M and 1B scales.">
+              </figure>
+              <p class="result-caption">Construction cost at the 50M and 1B scales.</p>
+            </div>
+            <div class="column">
+              <p class="subfig-label">(c) Query throughput &mdash; Figure 7</p>
+              <figure class="image">
+                <img src="./static/images/figure7.svg"
+                     alt="QPS comparison on NQ with the MP and Mini embedding pair, CPU-only and with GPU.">
+              </figure>
+              <p class="result-caption">QPS on NQ (MP&amp;Mini), CPU-only and with an A100 GPU.</p>
+            </div>
+          </div>
+
+          <div class="finding">
+            <span class="finding-label">Finding</span>
+            HVMap matches migration accuracy in most open-domain settings (no significant difference
+            in 13 of 18) and is best in every cross-domain setting, while its construction cost stays
+            nearly constant as the database grows (e.g., 6 vs. 1,917 hours for MIG at 1B) and it
+            reaches the highest QPS by embedding each query only once with a lightweight model.
+          </div>
+        </div>
+
+        <!-- More results pointer -->
+        <p class="has-text-centered has-text-grey" style="margin-top: 1rem; margin-bottom: 1.25rem;">
+          For scale-out experiments, ablations, and more detailed findings, please refer to the
+          <a href="#"><strong>full paper</strong></a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{lim2027hvmap,
+  author  = {Lim, Mintaek and Hyeon, Sieun and Choi, Geon and Do, Jaeyoung},
+  title   = {Federated Vector Retrieval across Heterogeneous VectorDBs},
+  journal = {Proceedings of the VLDB Endowment (PVLDB)},
+  year    = {2027}
+}</code></pre>
+  </div>
+</section>
+
+<!-- Footer (Don't change) -->
+<footer class="footer" style="padding-bottom: 40px;">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <a href="https://en.snu.ac.kr">
+            <img src="./static/images/snu_logo.png" alt="Logo" style="max-height: 48px; margin: 6px 10px;">
+          </a>
+          <a href="https://aidas.snu.ac.kr">
+            <img src="./static/images/aidaslab_logo.png" alt="Logo" style="max-height: 36px; margin: 10px 30px;">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
